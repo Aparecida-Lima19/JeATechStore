@@ -3,10 +3,7 @@ package com.jatechstore.jatechestore.entities;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity // Indica que esta classe é uma entidade JPA (tabela no banco de dados)
 @Table(name = "tb_order") // Define o nome da tabela como "tb_order"
@@ -89,5 +86,17 @@ public class Order {
         return items.stream().map(x -> x.getProduct()).toList();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Order order = (Order) o;
+        return Objects.equals(id, order.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
