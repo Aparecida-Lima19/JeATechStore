@@ -6,35 +6,46 @@ import jakarta.persistence.ManyToOne;
 
 import java.util.Objects;
 
-
 @Embeddable
+// Indica que esta classe será embutida em outra entidade (OrderItem), formando uma chave composta
 public class OrderItemPK {
+
     @ManyToOne
     @JoinColumn(name = "order_id")
+    // Mapeia a coluna de chave estrangeira "order_id" para associação com a entidade Order
     private Order order;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    // Mapeia a coluna de chave estrangeira "product_id" para associação com a entidade Product
     private Product product;
 
     public OrderItemPK() {
     }
+
+    // Construtor que facilita a criação direta de uma chave composta
     public OrderItemPK(Order order, Product product) {
         this.order = order;
         this.product = product;
     }
+
     public Order getOrder() {
         return order;
     }
+
     public void setOrder(Order order) {
         this.order = order;
     }
+
     public Product getProduct() {
         return product;
     }
+
     public void setProduct(Product product) {
         this.product = product;
     }
+
+    // Importante: equals e hashCode são baseados nos dois atributos da chave composta
 
     @Override
     public boolean equals(Object o) {

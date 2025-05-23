@@ -1,35 +1,39 @@
 package com.jatechstore.jatechestore.entities;
 
 import jakarta.persistence.*;
-
 import java.time.Instant;
 import java.util.Objects;
 
-
-@Entity // Indica que esta classe é uma entidade JPA (tabela no banco de dados)
-@Table(name = "tb_payment") // Define o nome da tabela como "tb_payment"
+@Entity // Indica que esta classe é uma entidade JPA (representa uma tabela no banco de dados)
+@Table(name = "tb_payment") // Define explicitamente o nome da tabela como "tb_payment"
 public class Payment {
 
-    @Id // Indica que o campo é a chave primária da entidade
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Geração automática do ID pelo banco (auto-incremento)
+    @Id // Define o campo como chave primária
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // Estratégia de geração automática do ID pelo banco (auto-incremento)
     private Long id;
 
-    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE") //útil para manter horário local e compatível com PostgreSQL
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    // Armazena a data/hora sem fuso horário, recomendado para compatibilidade com bancos como PostgreSQL
     private Instant moment;
 
     @OneToOne
     @MapsId
+    // Indica que a chave primária desta entidade também é chave estrangeira para a entidade Order
+    // Garante que Payment e Order compartilham o mesmo ID
     private Order order;
 
     public Payment() {
     }
 
+    // Construtor com todos os atributos
     public Payment(Long id, Instant moment, Order order) {
         this.id = id;
         this.moment = moment;
         this.order = order;
     }
 
+    // Getters e Setters padrão
 
     public Long getId() {
         return id;
@@ -54,6 +58,8 @@ public class Payment {
     public void setOrder(Order order) {
         this.order = order;
     }
+
+    // Implementação de equals e hashCode baseada no id, conforme recomendado em entidades JPA
 
     @Override
     public boolean equals(Object o) {

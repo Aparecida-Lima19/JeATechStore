@@ -1,25 +1,24 @@
 package com.jatechstore.jatechestore.entities;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 
 @Entity // Indica que esta classe é uma entidade JPA (tabela no banco de dados)
 @Table(name = "tb_user") // Define o nome da tabela como "tb_user"
 public class User {
 
     @Id // Indica que o campo é a chave primária da entidade
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Geração automática do ID pelo banco (auto-incremento)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // Geração automática do ID pelo banco (auto-incremento)
     private Long id;
-
 
     private String name;
 
     @Column(unique = true)
+    // Garante que o e-mail seja único no banco de dados
     private String email;
 
     private String phone;
@@ -28,10 +27,10 @@ public class User {
 
     private String password;
 
-    @OneToMany(mappedBy = "client") // Relacionamento 1:N com a entidade Order; um usuário pode ter vários pedidos
-    // O atributo "mappedBy" indica que o lado "Order" é o dono da relação, usando o campo "client"
-    private List<Order> orders = new ArrayList<Order>();
-
+    @OneToMany(mappedBy = "client")
+    // Relacionamento um-para-muitos: um usuário pode ter vários pedidos
+    // O campo "client" da entidade Order é o dono da relação
+    private List<Order> orders = new ArrayList<>();
 
     public User() {
     }
@@ -45,6 +44,7 @@ public class User {
         this.password = password;
     }
 
+    // Getters e Setters padrão
 
     public Long getId() {
         return id;

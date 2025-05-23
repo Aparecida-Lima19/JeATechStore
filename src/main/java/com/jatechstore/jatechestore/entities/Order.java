@@ -1,31 +1,33 @@
 package com.jatechstore.jatechestore.entities;
 
 import jakarta.persistence.*;
-
 import java.time.Instant;
 import java.util.*;
 
-@Entity // Indica que esta classe é uma entidade JPA (tabela no banco de dados)
-@Table(name = "tb_order") // Define o nome da tabela como "tb_order"
+@Entity
+@Table(name = "tb_order")
 public class Order {
 
-    @Id // Indica que o campo é a chave primária da entidade
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Geração automática do ID pelo banco (auto-incremento)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE") // Usa TIMESTAMP sem fuso horário (compatível com PostgreSQL)
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    // Garante que o campo de data/hora seja armazenado sem fuso horário, evitando inconsistências, especialmente com PostgreSQL
     private Instant moment;
+
     private OrderStatus status;
 
-    @ManyToOne // Muitos pedidos podem estar associados a um único cliente
-    @JoinColumn(name = "client_id") // Define a chave estrangeira com o nome "client_id"
-    private User client;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private User client; // Relacionamento muitos-para-um: vários pedidos podem ter o mesmo cliente
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private Payment payment;
+    private Payment payment; // Relacionamento um-para-um: cada pedido possui um pagamento
 
     @OneToMany(mappedBy = "id.order")
     private Set<OrderItem> items = new HashSet<>();
+    // Utiliza Set para evitar itens repetidos no mesmo pedido
 
     public Order() {
     }
@@ -82,6 +84,7 @@ public class Order {
         return items;
     }
 
+    // Método auxiliar que retorna a lista de produtos associados aos itens deste pedido
     public List<Product> getProducts() {
         return items.stream().map(x -> x.getProduct()).toList();
     }
@@ -90,7 +93,6 @@ public class Order {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Order order = (Order) o;
         return Objects.equals(id, order.id);
     }
