@@ -4,11 +4,17 @@ import com.jatechstore.jatechestore.dto.ProductDTO;
 import com.jatechstore.jatechestore.entities.Product;
 import com.jatechstore.jatechestore.repositories.ProductRepository;
 import com.jatechstore.jatechestore.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.boot.model.relational.Database;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.swing.text.html.parser.Entity;
 
 @Service // Indica que esta classe é um componente de serviço do Spring
 public class ProductService {
@@ -38,23 +44,31 @@ public class ProductService {
         Product entity = new Product();
         copyDtoEntity(dto, entity);
         entity = repository.save(entity);
-        return new ProductDTO(entity); /
+        return new ProductDTO(entity);
     }
 
     // Atualiza um produto existente
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
-        // Obtém uma referência ao produto pelo ID (sem buscar do banco ainda)
-        Product entity = repository.getReferenceById(id);
-        copyDtoEntity(dto, entity);
-        entity = repository.save(entity);
-        return new ProductDTO(entity);
+        try {
+            // Obtém uma referência ao produto pelo ID
+            Product entity = repository.getReferenceById(id);
+            copyDtoEntity(dto, entity);
+            entity = repository.save(entity);
+            return new ProductDTO(entity);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Recurso não encontrado!");
+        }
     }
 
     // Deleta um produto pelo ID
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
-        repository.deleteById(id); // Remove o produto do banco de dados
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Recurso não encontrado!");
+        }
+        repository.deleteById(id);
     }
 
     // Método auxiliar que copia os dados do DTO para a entidade
